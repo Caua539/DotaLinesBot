@@ -14,7 +14,7 @@ import os
 import requests
 
 from uuid import uuid4
-from telegram import InlineQueryResultArticle, InlineQueryResultAudio, InputTextMessageContent
+from telegram import InlineQueryResultArticle, InlineQueryResultVoice, InputTextMessageContent
 from telegram.ext import Updater, CommandHandler, InlineQueryHandler
 from telegram.ext.dispatcher import run_async
 from telegram.utils.botan import Botan
@@ -124,11 +124,11 @@ def response_inline(bot, update):
         bot.answerInlineQuery(update.inline_query.id, results=results)
     else:
         heroname = hero.replace('_responses', '')
-        results.append(InlineQueryResultAudio(
+        results.append(InlineQueryResultVoice(
             id = uuid4(),
-            audio_url = response["url"],
+            voice_url = response["url"],
             title="{0}: ""{1}""".format(heroname, response["text"]
-        )))
+            )))
         bot.answerInlineQuery(update.inline_query.id, results=results)
 
 def error_handler(bot, update, error): # pylint: disable=unused-argument
