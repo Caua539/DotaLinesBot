@@ -38,15 +38,15 @@ def start_command(bot, update):
     """ Handle the /start command. """
     bot.sendMessage(update.message.chat_id, text='Hi, my name is @dotalinebot, I can send'
                                                  ' you voice messages with dota 2 responses, use'
-                                                 ' the command /help to see how to use me.')
+                                                 ' the command\n/help to see how to use me.')
 
 def help_command(bot, update):
     """ Handle the /help command. """
     bot.sendMessage(update.message.chat_id,
-                    text='Usage: Don\'t need to add it to a group, it\'s an inline bot.\n'
+                    text='Usage: \nDon\'t need to add it to a group, it\'s an inline bot.\n\n'
                          'Write \'@dotalinebot HERO/RESPONSE\' in chat to get a voice\n'
                          ' response in return, then just click it to send it.\n'
-                         'Example: \'@dotalinebot Pudge/Get Over Here\''
+                         'Example: \'@dotalinebot Pudge/Get Over Here\'\n\n'
                          'Note that there\'s no need to use the full name of the hero. Heros with'
                          ' two or more names should b separated with spaces.\n'
                          'Ex: phantom_assassin.\n')
