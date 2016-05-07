@@ -44,11 +44,11 @@ def help_command(bot, update):
     """ Handle the /help command. """
     bot.sendMessage(update.message.chat_id,
                     text='Usage: \nDon\'t need to add it to a group, it\'s an inline bot.\n\n'
-                         'Write \'@dotalinebot HERO/RESPONSE\' in chat to get a voice\n'
+                         'Write \'@dotalinebot HERO/RESPONSE\' in chat to get a voice'
                          ' response in return, then just click it to send it.\n'
                          'Example: \'@dotalinebot Pudge/Get Over Here\'\n\n'
                          'Note that there\'s no need to use the full name of the hero. Heros with'
-                         ' two or more names should b separated with spaces.\n'
+                         ' two or more names should be separated with spaces.\n'
                          'Ex: phantom_assassin.\n')
 
 @run_async
