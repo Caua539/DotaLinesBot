@@ -1,1 +1,1 @@
-python dotaresponsebot.py
+web: python dotaresponsebot.py
