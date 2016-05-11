@@ -1,1 +1,1 @@
-web: python dotaresponsebot.py -p $PORT
+bot: python dotaresponsebot.py -p $PORT
