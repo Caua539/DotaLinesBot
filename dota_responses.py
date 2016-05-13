@@ -82,27 +82,40 @@ def find_best_response(query, responses_dict, specific_hero=None):
     best_match = []
     hero_match = []
     pos = 0
-    responses = []
+    resplist = []
+    flag = False
     for hero, responses in responses_dict.items():
         if specific_hero != None:
             if hero.lower().find(specific_hero.lower()) < 0:
                 continue
         for idx, response in enumerate(responses):
-            matched = matched_strings(query, response["text"])
-            if matched > last_matched:
+
+            #matched = matched_strings(query, response["text"])
+            if response["text"].lower().find(query.lower()) > 0:
+                print('meh')
                 best_match.append(idx)
                 hero_match.append(hero)
-                last_matched = matched
+                print (pos)
+                print (response)
+                #last_matched = matched
                 pos += 1
-            if pos > 4:
-                break
+                if pos > 4:
+                    break
+
+        if pos > 4:
+            break
+
 
     if not hero_match or not best_match:
         return "", {}
     else:
-        for i in range(5):
-            responses[i] = responses_dict[hero_match][best_match[i]]
-        return hero_match, responses
+
+        print ('List len: {}'.format(len(best_match)))
+        print ('Hero len: {}'.format(len(best_match)))
+        for i in range(len(best_match)):
+            resplist.append(responses_dict[hero_match[i]][best_match[i]])
+            print (responses_dict[hero_match[i]][best_match[i]]["text"])
+        return hero_match, resplist
 
 if __name__ == "__main__":
     PAGES = fetch_response_pages()
