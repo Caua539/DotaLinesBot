@@ -79,8 +79,10 @@ def matched_strings(string1, string2):
 def find_best_response(query, responses_dict, specific_hero=None):
     """Find the best response from a given query"""
     last_matched = 0
-    best_match = -1
-    hero_match = ""
+    best_match = []
+    hero_match = []
+    pos = 0
+    responses = []
     for hero, responses in responses_dict.items():
         if specific_hero != None:
             if hero.lower().find(specific_hero.lower()) < 0:
@@ -88,13 +90,19 @@ def find_best_response(query, responses_dict, specific_hero=None):
         for idx, response in enumerate(responses):
             matched = matched_strings(query, response["text"])
             if matched > last_matched:
-                best_match = idx
-                hero_match = hero
+                best_match.append(idx)
+                hero_match.append(hero)
                 last_matched = matched
-    if hero_match == "" or best_match == -1:
+                pos += 1
+            if pos > 4:
+                break
+
+    if not hero_match or not best_match:
         return "", {}
     else:
-        return hero_match, responses_dict[hero_match][best_match]
+        for i in range(5):
+            responses[i] = responses_dict[hero_match][best_match[i]]
+        return hero_match, responses
 
 if __name__ == "__main__":
     PAGES = fetch_response_pages()

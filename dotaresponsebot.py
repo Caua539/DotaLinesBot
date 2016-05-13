@@ -70,10 +70,11 @@ def response_inline(bot, update):
         query = message
         query.strip()
 
-    hero, response = dota_responses.find_best_response(query, RESPONSE_DICT, specific_hero)
-    print (hero)
-    print (response["text"])
-    if hero == "" or response is None:
+    hero, responses = dota_responses.find_best_response(query, RESPONSE_DICT, specific_hero)
+    
+    for i in responses:
+        print ("{{0}: {1} }".format(hero[i], i["text"])
+    if not hero or not responses:
         results.append(InlineQueryResultArticle(
             id = uuid4(),
             title = "Nenhuma fala encontrada.",
@@ -81,13 +82,13 @@ def response_inline(bot, update):
         ))
         bot.answerInlineQuery(update.inline_query.id, results=results)
     else:
-        heroname = hero.replace('_responses', '')
-        results.append(InlineQueryResultAudio(
-            id = uuid4(),
-            audio_url = response["url"],
-            title="""{}""".format(response["text"]),
-            performer= heroname
-            ))
+        for sresp in responses:
+            heroname = hero[sresp].replace('_responses', '')
+            sresult = InlineQueryResultAudio(id = uuid4(),
+                                            audio_url = sresp["url"],
+                                            title="""{}""".format(sresp["text"]),
+                                            performer= heroname)
+        results.append(sresult)
         bot.answerInlineQuery(update.inline_query.id, results=results)
 
 def error_handler(bot, update, error):
