@@ -70,7 +70,7 @@ def response_inline(bot, update):
         query = message
         query.strip()
 
-    hero, responses = dota_responses.find_best_response(query, RESPONSE_DICT, specific_hero)
+    hero, responses = dota_responses.prepare_responses(query, RESPONSE_DICT, specific_hero)
 
     print (responses)
     if not hero or not responses:

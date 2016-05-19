@@ -76,46 +76,50 @@ def matched_strings(string1, string2):
     return number_of_matches
 
 
-def find_best_response(query, responses_dict, specific_hero=None):
+def prepare_responses(query, responses_dict, specific_hero=None):
+
+    best_responses = []
+    hero_responses = []
+    i = 0
+    while i < 5:
+        hero, response = find_best_response(query, responses_dict, best_responses, specific_hero)
+        if hero != "" and response is not None:
+            best_responses.append(response)
+            hero_responses.append(hero)
+            i += 1
+        elif i == 0 and response is None:
+            break
+    return hero_responses, best_responses
+
+
+def find_best_response(query, responses_dict, best_responses, specific_hero=None):
     """Find the best response from a given query"""
+
     last_matched = 0
-    best_match = []
-    hero_match = []
-    pos = 0
-    resplist = []
+    best_match = -1
+    hero_match = ""
     flag = False
     for hero, responses in responses_dict.items():
-        if specific_hero != None:
+        if specific_hero is not None:
             if hero.lower().find(specific_hero.lower()) < 0:
                 continue
         for idx, response in enumerate(responses):
-
-            #matched = matched_strings(query, response["text"])
-            if response["text"].lower().find(query.lower()) > 0:
-                print('meh')
-                best_match.append(idx)
-                hero_match.append(hero)
-                print (pos)
-                print (response)
-                #last_matched = matched
-                pos += 1
-                if pos > 4:
-                    break
-
-        if pos > 4:
-            break
-
-
-    if not hero_match or not best_match:
+            matched = matched_strings(query, response["text"])
+            if matched > last_matched:
+                for resp in best_responses:
+                    if response == resp:
+                        flag = True
+                        break
+                if flag:
+                    flag = False
+                    continue
+                best_match = idx
+                hero_match = hero
+                last_matched = matched
+    if hero_match == "" or best_match == -1:
         return "", {}
     else:
-
-        print ('List len: {}'.format(len(best_match)))
-        print ('Hero len: {}'.format(len(best_match)))
-        for i in range(len(best_match)):
-            resplist.append(responses_dict[hero_match[i]][best_match[i]])
-            print (responses_dict[hero_match[i]][best_match[i]]["text"])
-        return hero_match, resplist
+        return hero_match, responses_dict[hero_match][best_match]
 
 if __name__ == "__main__":
     PAGES = fetch_response_pages()
