@@ -61,6 +61,7 @@ def response_inline(bot, update):
     """
     results = list()
     message = update.inline_query.query
+    user = update.inline_query.from_user[first_name]
     specific_hero = None
     if message.find("/") >= 0:
         specific_hero, query = message.split("/")
@@ -81,7 +82,6 @@ def response_inline(bot, update):
         bot.answerInlineQuery(update.inline_query.id, results=results)
     else:
         for i in range(len(responses)):
-            print ("valor de i: {}".format(i))
             heroname = hero[i].replace('_responses', '')
             sresult = InlineQueryResultAudio(id = uuid4(),
                                             audio_url = responses[i]["url"],
