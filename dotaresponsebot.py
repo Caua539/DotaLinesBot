@@ -62,8 +62,6 @@ def response_inline(bot, update):
     results = list()
     message = update.inline_query.query
     print ('>>>{}<<<'.format(message))
-    if message is None:
-        return
     user = update.inline_query.from_user.first_name
     specific_hero = None
     if message.find("/") >= 0:
@@ -76,7 +74,7 @@ def response_inline(bot, update):
 
     hero, responses = dota_responses.prepare_responses(query, RESPONSE_DICT, specific_hero)
 
-
+    print ('>>{0}<<, \nresp:{1}'.format(hero, responses))
     if not hero or not responses:
         results.append(InlineQueryResultArticle(
             id = uuid4(),

@@ -84,11 +84,19 @@ def prepare_responses(query, responses_dict, specific_hero=None):
     while i < 5:
         hero, response = find_best_response(query, responses_dict, best_responses, specific_hero)
         if hero != "" and response is not None:
+            print ('{0} ++++ {1}'.format(i, response))
             best_responses.append(response)
             hero_responses.append(hero)
             i += 1
-        elif i == 0 and response is None:
-            break
+        elif response == {}:
+            print ('response é none')
+            i = 5
+        """elif i == 0 and response == {}:
+            print ('i é zero, response é none')
+            best_responses = 0
+            hero_responses = 0
+            break"""
+        
     return hero_responses, best_responses
 
 
@@ -107,7 +115,7 @@ def find_best_response(query, responses_dict, best_responses, specific_hero=None
             matched = matched_strings(query, response["text"])
             if matched > last_matched:
                 for resp in best_responses:
-                    if response["text"] == resp["text"]:
+                    if response == resp:
                         flag = True
                         break
                 if flag:
