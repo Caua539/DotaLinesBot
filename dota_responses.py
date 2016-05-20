@@ -107,7 +107,7 @@ def find_best_response(query, responses_dict, best_responses, specific_hero=None
             matched = matched_strings(query, response["text"])
             if matched > last_matched:
                 for resp in best_responses:
-                    if response == resp:
+                    if response["text"] == resp["text"]:
                         flag = True
                         break
                 if flag:

@@ -61,7 +61,10 @@ def response_inline(bot, update):
     """
     results = list()
     message = update.inline_query.query
-    user = update.inline_query.from_user[first_name]
+    print ('>>>{}<<<'.format(message))
+    if message is None:
+        return
+    user = update.inline_query.from_user.first_name
     specific_hero = None
     if message.find("/") >= 0:
         specific_hero, query = message.split("/")
@@ -73,7 +76,7 @@ def response_inline(bot, update):
 
     hero, responses = dota_responses.prepare_responses(query, RESPONSE_DICT, specific_hero)
 
-    print (responses)
+
     if not hero or not responses:
         results.append(InlineQueryResultArticle(
             id = uuid4(),
@@ -88,8 +91,9 @@ def response_inline(bot, update):
                                             title="""{}""".format(responses[i]["text"]),
                                             performer= heroname)
             results.append(sresult)
-        print ("AQUI")
         bot.answerInlineQuery(update.inline_query.id, results=results)
+        print (user)
+        print ('{}\n'.format(responses))
 
 def error_handler(bot, update, error):
     """ Handle polling errors. """
