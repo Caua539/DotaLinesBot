@@ -31,8 +31,6 @@ LOGGER = logging.getLogger(__name__)
 with open('config.json') as config_file:
     CONFIGURATION = json.load(config_file)
 
-# Create a Botan tracker object
-botan = Botan(CONFIGURATION["botan_token"])
 
 def start_command(bot, update):
     """ Handle the /start command. """

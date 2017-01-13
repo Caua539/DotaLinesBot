@@ -44,7 +44,6 @@ def create_response_dict(response_pages):
         page_es_check = page.split("/")[-1]
         if (page_es_check == 'es') or (page_name == 'Responses'):
             continue
-        #print (page)
         print (page_name)
 
         soup = parse_page(page) # BeautifulSoup object, holding a parsed page
@@ -84,7 +83,7 @@ def prepare_responses(query, responses_dict, specific_hero=None):
     best_responses = []
     hero_responses = []
     i = 0
-    while i < 5:
+    while i < 10:
         hero, response = find_best_response(query, responses_dict, best_responses, specific_hero)
         if hero != "" and response is not None:
             print ('{0} ++++ {1}'.format(i, response))
@@ -93,12 +92,7 @@ def prepare_responses(query, responses_dict, specific_hero=None):
             i += 1
         elif response == {}:
             print ('response é none')
-            i = 5
-        """elif i == 0 and response == {}:
-            print ('i é zero, response é none')
-            best_responses = 0
-            hero_responses = 0
-            break"""
+            i = 10
         
     return hero_responses, best_responses
 
@@ -136,10 +130,6 @@ if __name__ == "__main__":
     print ('start')
     PAGES = fetch_response_pages()
     RESP_DICT = create_response_dict(PAGES)
-    #DICT = json.load(RESP_DICT)
     json.dump(RESP_DICT, open("newresponses.json", 'w'), indent=3)
     print ('oi')
-    #resp_dict = load_response_json("responses.json")
-    #best_hero, best_response = find_best_response("first blood", resp_dict, "axe")
-    #print(best_hero)
-    #print(best_response)
+
