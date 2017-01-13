@@ -40,9 +40,12 @@ def create_response_dict(response_pages):
     """
     response_dict = {}
     for page in response_pages:
-        page_name = page.split("/")[-1]
-        if page_name.find("Abyssal") >= 0: # Exclude Abyssal Warlord
-            pass
+        page_name = page.split("/")[-2]
+        page_es_check = page.split("/")[-1]
+        if (page_es_check == 'es') or (page_name == 'Responses'):
+            continue
+        #print (page)
+        print (page_name)
 
         soup = parse_page(page) # BeautifulSoup object, holding a parsed page
 
@@ -130,9 +133,12 @@ def find_best_response(query, responses_dict, best_responses, specific_hero=None
         return hero_match, responses_dict[hero_match][best_match]
 
 if __name__ == "__main__":
+    print ('start')
     PAGES = fetch_response_pages()
     RESP_DICT = create_response_dict(PAGES)
-    json.dump(RESP_DICT, open("newresponses.json", 'w'))
+    #DICT = json.load(RESP_DICT)
+    json.dump(RESP_DICT, open("newresponses.json", 'w'), indent=3)
+    print ('oi')
     #resp_dict = load_response_json("responses.json")
     #best_hero, best_response = find_best_response("first blood", resp_dict, "axe")
     #print(best_hero)
