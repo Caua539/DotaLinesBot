@@ -1,5 +1,5 @@
 #!/bin/python
-""" Module that find the best dota 2 response from a givem text"""
+""" Module that find the best game response from a givem text"""
 
 import json
 import re

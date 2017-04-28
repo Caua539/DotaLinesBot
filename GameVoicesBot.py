@@ -3,9 +3,8 @@
 #pylint: disable=locally-disabled
 
 """
-    Telegram bot that sends a voice message with a Dota 2 response.
-    Author: Luiz Francisco Rodrigues da Silva <luizfrdasilva@gmail.com>
-    InLine additions: Cauã Martins Pessoa <caua539@gmail.com>
+    Telegram bot that sends a voice message with a game voice line.
+    Author: Cauã Martins Pessoa <caua539@gmail.com>
 """
 
 import json
@@ -34,28 +33,32 @@ with open('config.json') as config_file:
 
 def start_command(bot, update):
     """ Handle the /start command. """
-    bot.sendMessage(update.message.chat_id, text='Hi, my name is @dotalinebot, I can send'
-                                                 ' you voice messages with dota 2 responses, use'
+    bot.sendMessage(update.message.chat_id, text='Hi, my name is @gamevoicesbot, I can send'
+                                                 ' you voice messages with some games voice lines, use'
                                                  ' the command\n/help to see how to use me.')
 
 def help_command(bot, update):
     """ Handle the /help command. """
     bot.sendMessage(update.message.chat_id,
-                    text='Usage: \nDon\'t need to add it to a group, it\'s an inline bot.\n\n'
-                         'Write \'@dotalinebot HERO/RESPONSE\' in chat to get a voice'
-                         ' response in return, then just click it to send it.\n'
-                         'Example: \'@dotalinebot Pudge/Get Over Here\'\n\n'
-                         'Note that there\'s no need to use the full name of the hero. Heros with'
-                         ' two or more names should be separated with spaces.\n'
-                         'Ex: phantom_assassin.\n')
+                    text='Usage: \nYou don\'t need to add me to a group, I\' an inline bot.\n\n'
+                         'Write \'@gamevoicesbot CHARACTER/VOICE LINE\' in chat to get a voice '
+                         'line in return, then just click it to send it.\n'
+                         'Example: \'@gamevoicesbot Pudge/Get Over Here\'\n\n'
+                         'Note that there\'s no need to use the full name of the character or pack.'
+                         'Characters/pack with two or more names should be separated with underlines.\n'
+                         'Ex: phantom_assassin.\n\n'
+                         'Current games:\n'
+                         '- Dota 2 (all characters, all voice lines)\n'
+                         '- Overwatch (only 3 voice lines, work in progress)\n'
+                         '- Some easter eggs ;)\n')
 
 @run_async
 def response_inline(bot, update):
     """
         Handle inline queries
 
-        The user sends a message with a desired dota 2 response and the bot responds sends a voice
-        message with the best response.
+        The user sends a message with a desired game voice line and the bot sends a voice
+        message with the best voice line.
     """
     results = list()
     message = update.inline_query.query
