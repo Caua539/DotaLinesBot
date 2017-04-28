@@ -62,7 +62,7 @@ def response_inline(bot, update):
     """
     results = list()
     message = update.inline_query.query
-    print ('>>>{}<<<'.format(message))
+    #print ('>>>{}<<<'.format(message))
     user = update.inline_query.from_user.first_name
     specific_hero = None
     if message.find("/") >= 0:
@@ -75,7 +75,7 @@ def response_inline(bot, update):
 
     hero, responses = GameVoicesFinder.prepare_responses(query, RESPONSE_DICT, specific_hero)
 
-    print ('>>{0}<<, \nresp:{1}'.format(hero, responses))
+    #print ('>>{0}<<, \nresp:{1}'.format(hero, responses))
     if not hero or not responses:
         results.append(InlineQueryResultArticle(
             id = uuid4(),
@@ -86,13 +86,13 @@ def response_inline(bot, update):
         for i in range(len(responses)):
             heroname = hero[i].replace('_responses', '')
             sresult = InlineQueryResultAudio(id = uuid4(),
-                                            audio_url = responses[i]["url"],
-                                            title="""{}""".format(responses[i]["text"]),
-                                            performer= heroname)
+                                             audio_url = responses[i]["url"],
+                                             title="""{}""".format(responses[i]["text"]),
+                                             performer= heroname)
             results.append(sresult)
         bot.answerInlineQuery(update.inline_query.id, results=results)
         print (user)
-        print ('{}\n'.format(responses))
+        #print ('{}\n'.format(responses))
 
 def error_handler(bot, update, error):
     """ Handle polling errors. """
