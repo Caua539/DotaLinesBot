@@ -16,7 +16,7 @@ from telegram.ext import Updater, CommandHandler, InlineQueryHandler
 from telegram.ext.dispatcher import run_async
 from telegram.utils.botan import Botan
 
-import dota_responses
+import GameVoicesFinder
 
 RESPONSE_DICT = {}
 
@@ -73,7 +73,7 @@ def response_inline(bot, update):
         query = message
         query.strip()
 
-    hero, responses = dota_responses.prepare_responses(query, RESPONSE_DICT, specific_hero)
+    hero, responses = GameVoicesFinder.prepare_responses(query, RESPONSE_DICT, specific_hero)
 
     print ('>>{0}<<, \nresp:{1}'.format(hero, responses))
     if not hero or not responses:
@@ -116,7 +116,7 @@ def main():
 
     global RESPONSE_DICT
     # Load the responses
-    RESPONSE_DICT = dota_responses.load_response_json(CONFIGURATION["responses_file"])
+    RESPONSE_DICT = GameVoicesFinder.load_response_json(CONFIGURATION["responses_file"])
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher

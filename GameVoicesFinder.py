@@ -1,4 +1,6 @@
-#!/bin/python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#pylint: disable=locally-disabled
 """ Module that find the best game response from a givem text"""
 
 import json
