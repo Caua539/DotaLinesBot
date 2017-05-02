@@ -99,9 +99,6 @@ def error_handler(bot, update, error):
     LOGGER.warn('Update "%s" caused error "%s"', str(update), str(error)) # pylint: disable=deprecated-method
 
 def track(bot, update):
-    """ Print to console and log activity with Botan.io """
-    botan.track(update.message,
-                update.message.text.split(" ")[0])
 
     LOGGER.info("New message\nFrom: %s\nchat_id: %s\nText: %s",
                 update.message.from_user,
@@ -122,13 +119,13 @@ def main():
     dp = updater.dispatcher
 
     # on different commands - answer in Telegram
-    dp.addHandler(CommandHandler("start", start_command))
-    dp.addHandler(InlineQueryHandler(response_inline))
-    dp.addHandler(InlineQueryHandler(track))
-    dp.addHandler(CommandHandler("help", help_command))
+    dp.add_handler(CommandHandler("start", start_command))
+    dp.add_handler(InlineQueryHandler(response_inline))
+    dp.add_handler(InlineQueryHandler(track))
+    dp.add_handler(CommandHandler("help", help_command))
 
     # log all errors
-    dp.addErrorHandler(error_handler)
+    dp.add_error_handler(error_handler)
 
     # Start the Bot
     updater.start_polling()
