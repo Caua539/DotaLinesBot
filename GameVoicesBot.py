@@ -21,8 +21,8 @@ import GameVoicesFinder
 RESPONSE_DICT = {}
 
 # Enable logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 LOGGER = logging.getLogger(__name__)
 
@@ -101,9 +101,9 @@ def error_handler(bot, update, error):
 def track(bot, update):
 
     LOGGER.info("New message\nFrom: %s\nchat_id: %s\nText: %s",
-                update.message.from_user,
-                str(update.message.chat_id),
-                update.message.text)
+                update.inline_query.from_user,
+                str(update.inline_query.chat_id),
+                update.inline_query.query)
 
 
 def main():
