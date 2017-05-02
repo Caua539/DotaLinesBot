@@ -35,12 +35,10 @@ def prepare_responses(query, responses_dict, specific_hero=None):
     while i < 20:
         hero, response = find_best_response(query, responses_dict, best_responses, specific_hero)
         if hero != "" and response is not None:
-            #print ('{0} ++++ {1}'.format(i, response))
             best_responses.append(response)
             hero_responses.append(hero)
             i += 1
         elif response == {}:
-            #print ('response é none')
             i = 20
         
     return hero_responses, best_responses

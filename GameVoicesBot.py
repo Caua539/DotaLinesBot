@@ -11,10 +11,9 @@ import json
 import logging
 
 from uuid import uuid4
-from telegram import InlineQueryResultArticle, InlineQueryResultAudio, InputTextMessageContent
+from telegram import InlineQueryResultAudio
 from telegram.ext import Updater, CommandHandler, InlineQueryHandler
 from telegram.ext.dispatcher import run_async
-from telegram.utils.botan import Botan
 
 import GameVoicesFinder
 
@@ -60,10 +59,12 @@ def response_inline(bot, update):
         The user sends a message with a desired game voice line and the bot sends a voice
         message with the best voice line.
     """
-    results = list()
+                
+    
     message = update.inline_query.query
     user = update.inline_query.from_user.first_name
     specific_hero = None
+    
     if message.find("/") >= 0:
         specific_hero, query = message.split("/")
         specific_hero.strip()
@@ -71,15 +72,17 @@ def response_inline(bot, update):
     else:
         query = message
         query.strip()
+        
+    LOGGER.info("New query from: %s %s\nQuery: %s",
+                update.inline_query.from_user.first_name,
+                update.inline_query.from_user.last_name,
+                update.inline_query.query)
 
     hero, responses = GameVoicesFinder.prepare_responses(query, RESPONSE_DICT, specific_hero)
-
+    
+    results = list()
     if not hero or not responses:
-        results.append(InlineQueryResultArticle(
-            id = uuid4(),
-            title = "Nenhuma fala encontrada.",
-            input_message_content=InputTextMessageContent('')))
-        bot.answerInlineQuery(update.inline_query.id, results=results)
+        pass
     else:
         for i in range(len(responses)):
             heroname = hero[i].replace('_responses', '')
@@ -93,14 +96,6 @@ def response_inline(bot, update):
 def error_handler(bot, update, error):
     """ Handle polling errors. """
     LOGGER.warn('Update "%s" caused error "%s"', str(update), str(error))
-
-@run_async
-def track(bot, update):
-
-    LOGGER.info("New message\nFrom: %s\nchat_id: %s\nText: %s",
-                update.inline_query.from_user,
-                str(update.inline_query.chat_id),
-                update.inline_query.query)
 
 
 def main():
@@ -118,7 +113,6 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start_command))
     dp.add_handler(InlineQueryHandler(response_inline))
-    dp.add_handler(InlineQueryHandler(track))
     dp.add_handler(CommandHandler("help", help_command))
 
     # log all errors
