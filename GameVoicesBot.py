@@ -62,7 +62,6 @@ def response_inline(bot, update):
     """
     results = list()
     message = update.inline_query.query
-    #print ('>>>{}<<<'.format(message))
     user = update.inline_query.from_user.first_name
     specific_hero = None
     if message.find("/") >= 0:
@@ -75,7 +74,6 @@ def response_inline(bot, update):
 
     hero, responses = GameVoicesFinder.prepare_responses(query, RESPONSE_DICT, specific_hero)
 
-    #print ('>>{0}<<, \nresp:{1}'.format(hero, responses))
     if not hero or not responses:
         results.append(InlineQueryResultArticle(
             id = uuid4(),
@@ -91,13 +89,12 @@ def response_inline(bot, update):
                                              performer= heroname)
             results.append(sresult)
         bot.answerInlineQuery(update.inline_query.id, results=results)
-        print (user)
-        #print ('{}\n'.format(responses))
 
 def error_handler(bot, update, error):
     """ Handle polling errors. """
-    LOGGER.warn('Update "%s" caused error "%s"', str(update), str(error)) # pylint: disable=deprecated-method
+    LOGGER.warn('Update "%s" caused error "%s"', str(update), str(error))
 
+@run_async
 def track(bot, update):
 
     LOGGER.info("New message\nFrom: %s\nchat_id: %s\nText: %s",
