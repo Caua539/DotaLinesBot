@@ -1,75 +1,95 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#pylint: disable=locally-disabled
-""" Module that find the best game response from a givem text"""
+#!/bin/python
 
-import re
+
 import json
+import requests
+import os
 
-def load_response_json(filename):
-    """Load a previous created dict from a file"""
-    try:
-        with open(filename, "r") as response_json:
-            response_dict = json.load(response_json)
-    except IOError:
-        print("Cannot open {}".format(filename))
-        return {}
-
-    return response_dict
+from uuid import uuid4
+from shutil import rmtree
+from pony.orm import *
+from pydub import AudioSegment
 
 
-def matched_strings(string1, string2):
-    """Return the number of matched words between two strings"""
-    number_of_matches = 0
-    for string in string1.split(" "):
-        if re.search(r'\b{}\b'.format(string.lower()), string2.lower()) != None:
-            number_of_matches += 1
-    return number_of_matches
+""" Module that find the best game response from a given text"""
+
+from GameVoices_DBManager import Personagem, Clip
 
 
-def prepare_responses(query, responses_dict, specific_hero=None):
-
-    best_responses = []
-    hero_responses = []
-    i = 0
-    while i < 20:
-        hero, response = find_best_response(query, responses_dict, best_responses, specific_hero)
-        if hero != "" and response is not None:
-            best_responses.append(response)
-            hero_responses.append(hero)
-            i += 1
-        elif response == {}:
-            i = 20
-        
-    return hero_responses, best_responses
+with open('config.json') as config_file:
+    CONFIGURATION = json.load(config_file)
 
 
-def find_best_response(query, responses_dict, best_responses, specific_hero=None):
-    """Find the best response from a given query"""
+@db_session
+def get_responses(query, specific_hero):
+    
+    if query is None or query is '':
+        print(">>>Empty query<<<")
+        return None
+    
+    result = []
+    
+    folderid = uuid4()
 
-    last_matched = 0
-    best_match = -1
-    hero_match = ""
-    flag = False
-    for hero, responses in responses_dict.items():
-        if specific_hero is not None:
-            if hero.lower().find(specific_hero.lower()) < 0:
-                continue
-        for idx, response in enumerate(responses):
-            matched = matched_strings(query, response["text"])
-            if matched > last_matched:
-                for resp in best_responses:
-                    if response == resp:
-                        flag = True
-                        break
-                if flag:
-                    flag = False
-                    continue
-                best_match = idx
-                hero_match = hero
-                last_matched = matched
-    if hero_match == "" or best_match == -1:
-        return "", {}
+    if specific_hero is not None:
+        bd_query = select((c.personagem.nome, c.texto, c.url) for c in Clip if
+                          specific_hero.lower() == c.personagem.nome.lower() and query.lower() in
+                          c.texto.lower()).order_by(raw_sql('RANDOM()'))[:5]
+
+        if bd_query is not None and bd_query != []:
+            hero = bd_query[0][0]
+
+            for each in bd_query:
+                text = each[1]
+                url = each[2]
+                single_response = {'Character': hero,'Text': text, 'URL': url}
+                result.append(single_response)
+            
+            result = ogg_to_mp3(result, folderid)
+            return result
+        else:
+            result = None
+            return result
     else:
-        return hero_match, responses_dict[hero_match][best_match]
+        bd_query = select((c.personagem.nome, c.texto, c.url) for c in Clip if query.lower() in 
+                           c.texto.lower()).order_by(raw_sql('RANDOM()'))[:10]
+        
+        if bd_query is not None and bd_query != []:
+            for each in bd_query:
+                hero = each[0]
+                text = each[1]
+                url = each[2]
+                single_response = {'Character': hero, 'Text': text, 'URL': url}
+                result.append(single_response)
+
+            result = ogg_to_mp3(result, folderid)
+            return result
+        else:
+            result = None
+            return result
+
+
+def ogg_to_mp3(result, folderid):
+    
+    direc = "gamequotes.mooo.com/{}".format(folderid)
+    os.makedirs(direc+"/Original")
+        
+    for i, each in enumerate(result):
+        url = each["URL"]
+        file_path = direc+"/Original/audio_0{}.{}".format(i+1, url[-3:])
+        local_file = open(file_path,'wb')
+        local_file.write(requests.get(url).content)
+        local_file.close()
+        
+        mp3_file = AudioSegment.from_file(file_path, url[-3:])
+    
+        file_path = direc+"/audio_0{}.ogg".format(i+1)
+        mp3_file.export(file_path, format = "ogg", codec = "libopus")
+    
+        
+        
+        result[i]['URL'] = "http://"+file_path
+        
+    return result
+            
 

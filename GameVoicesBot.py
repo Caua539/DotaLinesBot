@@ -9,15 +9,16 @@
 
 import json
 import logging
+import GameVoices_DBManager
 
 from uuid import uuid4
-from telegram import InlineQueryResultAudio
+from telegram import InlineQueryResultVoice
 from telegram.ext import Updater, CommandHandler, InlineQueryHandler
 from telegram.ext.dispatcher import run_async
 
-import GameVoicesFinder
+from GameVoicesFinder import get_responses
 
-RESPONSE_DICT = {}
+
 
 # Enable logging
 logging.basicConfig(level=logging.INFO,
@@ -48,7 +49,7 @@ def help_command(bot, update):
                          'Ex: phantom_assassin.\n\n'
                          'Current games:\n'
                          '- Dota 2 (all characters, all voice lines)\n'
-                         '- Overwatch (only 3 voice lines, work in progress)\n'
+                         '- Overwatch (only 5 characters, not all lines, work in progress)\n'
                          '- Some easter eggs ;)\n')
 
 @run_async
@@ -60,9 +61,8 @@ def response_inline(bot, update):
         message with the best voice line.
     """
                 
-    
     message = update.inline_query.query
-    user = update.inline_query.from_user.first_name
+    user = update.inline_query.from_user
     specific_hero = None
     
     if message.find("/") >= 0:
@@ -74,24 +74,30 @@ def response_inline(bot, update):
         query.strip()
         
     LOGGER.info("New query from: %s %s\nQuery: %s",
-                update.inline_query.from_user.first_name,
-                update.inline_query.from_user.last_name,
-                update.inline_query.query)
+                user.first_name,
+                user.last_name,
+                message)
 
-    hero, responses = GameVoicesFinder.prepare_responses(query, RESPONSE_DICT, specific_hero)
+    print ("Finding the query...")
+    lines = get_responses(query, specific_hero)
     
     results = list()
-    if not hero or not responses:
+    if not lines:
         pass
     else:
-        for i in range(len(responses)):
-            heroname = hero[i].replace('_responses', '')
-            sresult = InlineQueryResultAudio(id = uuid4(),
-                                             audio_url = responses[i]["url"],
-                                             title="""{}""".format(responses[i]["text"]),
-                                             performer= heroname)
+        for each in lines:
+            heroname = each["Character"].replace('_responses', '')
+            heroname = heroname.replace('_', ' ')
+            audiodesc = heroname+" - "+"\"{}\"".format(each["Text"])
+            
+            print("Character: {} --- Text: {}".format(heroname, each["Text"]))
+            
+            sresult = InlineQueryResultVoice(id = uuid4(),
+                                             voice_url = each["URL"],
+                                             title= audiodesc,
+                                             caption= audiodesc)
             results.append(sresult)
-        bot.answerInlineQuery(update.inline_query.id, results=results)
+        bot.answerInlineQuery(update.inline_query.id, results=results, cache_time = 1)
 
 def error_handler(bot, update, error):
     """ Handle polling errors. """
@@ -103,9 +109,7 @@ def main():
     # Create the EventHandler and pass it your bot's token.
     updater = Updater(CONFIGURATION["telegram_token"])
 
-    global RESPONSE_DICT
     # Load the responses
-    RESPONSE_DICT = GameVoicesFinder.load_response_json(CONFIGURATION["responses_file"])
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
