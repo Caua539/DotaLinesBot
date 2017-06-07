@@ -22,7 +22,7 @@ def get_responses(query, specific_hero):
 
     if specific_hero is not None:
         bd_query = select((c.personagem.nome, c.texto, c.url) for c in Clip if
-                          specific_hero.lower() == c.personagem.nome.lower() and query.lower() in
+                          specific_hero.lower() in c.personagem.nome.lower() and query.lower() in
                           c.texto.lower()).order_by(raw_sql('RANDOM()'))[:10]
 
         if bd_query is not None and bd_query != []:
